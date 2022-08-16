@@ -1,18 +1,20 @@
-const heads = ['title','content','dueDate','status'];
+const heads = ['id','title','content','dueDate','status'];
 const deal = require('./dealWithJSON');
 
 const checkUniqueTitle = (allTasks,argv)=>{
+    try{
     for(let i=0;i<allTasks.length;i++){
         if(allTasks[i].title == argv.title){
-            let err = new Error('Title already existed'); 
-            return console.log(err);
+            throw new Error('Title already existed');
         }
+    }}catch(e){
+        return e.message;
     }
 }
 
 const addTask = (argv)=>{
     const allTasks = deal.readFromJSON();
-    checkUniqueTitle(allTasks,argv);
+    if(checkUniqueTitle(allTasks,argv)) return console.log(checkUniqueTitle(allTasks,argv));
 
     const data = {};
     heads.forEach((head)=>{
@@ -27,9 +29,9 @@ const showAllTasks = ()=>{
     return allTasks;
 }
 
-const showSingleTask = (title)=>{
+const showSingleTask = (id)=>{
     const allTasks = deal.readFromJSON();
-    const singleTask = allTasks.find(task=>task.title == title);
+    const singleTask = allTasks.find(task=>task.id == id);
     if(!singleTask) return 'No task with this title';
     return singleTask;
 }
@@ -37,7 +39,11 @@ const showSingleTask = (title)=>{
 const editTask = (argv)=>{
     const allTasks = deal.readFromJSON();
     allTasks.forEach((task,i)=>{
-        if(task.title == argv.title){
+        if(task.id == argv.id){
+            if(argv.title){
+                if(checkUniqueTitle(allTasks,argv) && task.title!=argv.title) return console.log(checkUniqueTitle(allTasks,argv));
+                allTasks[i].title = argv.title;
+            }
             if(argv.content) allTasks[i].content = argv.content;
             if(argv.dueDate) allTasks[i].dueDate = argv.dueDate;
         }
@@ -45,10 +51,10 @@ const editTask = (argv)=>{
     deal.writeToJSON(allTasks);
 }
 
-const changeTaskStatus = (title)=>{
+const changeTaskStatus = (id)=>{
     const allTasks = deal.readFromJSON();
     allTasks.forEach((task,i)=>{
-        if(task.title == title){
+        if(task.id == id){
             allTasks[i].status = !task.status;
         }
     });

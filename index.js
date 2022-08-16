@@ -4,18 +4,20 @@ const tasksController = require('./controllers/tasks.controller');
 yargs.command({
     command: 'add',
     builder:{
+        id:{
+            default:Date.now()
+        },
         title:{
             type:'String',
-            unique:true,
-            optionDemand:true,
+            demandOption:true,
         },
         content:{
             type:'String',
-            optionDemand:true,
+            demandOption:true,
         },
         dueDate:{
             type:'Date',
-            optionDemand:true,
+            demandOption:true,
         },
         status:{
             type:'Boolean',
@@ -33,20 +35,22 @@ yargs.command({
 yargs.command({
     command:'showSingle',
     builder:{
-        title:{
-            type:'String',
-            optionDemand:true
+        id:{
+            demandOption:true
         }
     },
-    handler:(argv)=> console.log(tasksController.showSingleTask(argv.title))
+    handler:(argv)=> console.log(tasksController.showSingleTask(argv.id))
 });
 
 yargs.command({
     command:'edit',
     builder:{
+        id:{
+            demandOption:true
+        },
         title:{
             type:'String',
-            optionDemand:true
+            demandOption:true
         },
         content:{
             type:'String',
@@ -61,12 +65,11 @@ yargs.command({
 yargs.command({
     command:'changeStatus',
     builder:{
-        title:{
-            type:'String',
-            optionDemand:true
+        id:{
+            demandOption:true
         }
     },
-    handler:(argv)=> tasksController.changeTaskStatus(argv.title)
+    handler:(argv)=> tasksController.changeTaskStatus(argv.id)
 })
 
 yargs.argv;
